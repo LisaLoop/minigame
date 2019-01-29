@@ -38,33 +38,59 @@
 			var cube = new THREE.Mesh( geometry, material );
 			scene.add( cube );
 
-			camera.position.z = 10;
+			// camera.position.z = 10;
 
             let body = document.body;
+            let angle = 0;
+            let radius = 10;
+            let verticalAngle = 0; // value from 0 to 90
 
+            let positionCamera = (camera, angle, radius) => { // positions in x and z
+                let angleR = (angle/180) * (Math.PI); 
+                let verticalAngleR = (verticalAngle/180) * (Math.PI); // 0 to PI/2 (90)
+                camera.position.x = radius * Math.sin(angleR);
+                camera.position.z = radius * Math.cos(angleR);
+                camera.position.y = radius * Math.sin(verticalAngleR);
+                camera.lookAt(0,0,0); 
+            }
+            positionCamera(camera,angle,radius); // starts the camera
+            
             let moveCamera = (e) => {
                 console.log(e.keyCode);
                 if(e.keyCode === 37){
                     // left
-                    camera.position.x += 2;
+                    angle += 11.25/10;
+                    positionCamera(camera,angle,radius);
                     
-                    camera.lookAt(0,0,0);
                 } else if(e.keyCode === 38){
                     //up
+                    verticalAngle += 11.25/10;
+                    if(verticalAngle > 90){ // clamp value in range
+                        verticalAngle = 90;
+                    }
+                    positionCamera(camera,angle,radius);
+
                 } else if(e.keyCode === 39) {
                     //right
-                    camera.position.x -= 2;
-                    camera.lookAt(0,0,0);
-
-
+                    angle -= 11.25/10;
+                    positionCamera(camera,angle,radius);
+                } else if(e.keyCode === 40) {
+                    //down 
+                    verticalAngle -= 11.25/10;
+                    if(verticalAngle < 0){ // clamp value in range
+                        verticalAngle = 0;
+                    }
+                    positionCamera(camera,angle,radius);
+                } else if(e.keyCode === 81) { // q keycode 
+                    radius += 1;
+                    positionCamera(camera,angle,radius);
+                } else if(e.keyCode === 65) { // a keycode
+                    radius -= 1;
+                    positionCamera(camera,angle,radius);
                 }
-
             } 
 
             body.addEventListener('keydown',moveCamera);
-
-
-
 			var animate = function () {
 				requestAnimationFrame( animate );
 
